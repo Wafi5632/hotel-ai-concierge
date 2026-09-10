@@ -137,6 +137,13 @@ with chat_tab:
                     </div>""",
                     unsafe_allow_html=True,
                 )
+    booking_action = last_result.get("tool_results", {}).get("booking", {})
+    if booking_action.get("success"):
+        booking_data = booking_action["data"]
+        st.success(
+            f"Reservation confirmed · {booking_data['booking_id']} · "
+            f"{money(booking_data['total_amount'], booking_data['currency'])}"
+        )
     prompt = st.chat_input("Ask about rooms, policies, amenities, or packages…", key="chat_input")
     if prompt:
         st.session_state.chat_messages.append({"role": "user", "content": prompt})

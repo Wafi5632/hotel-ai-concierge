@@ -14,6 +14,8 @@ from .models import AgentState
 from .tools import HotelToolset
 
 DATE_RE = re.compile(r"\b20\d{2}-\d{2}-\d{2}\b")
+EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
+PHONE_RE = re.compile(r"(?:\+?\d[\d\s().-]{6,}\d)")
 
 
 class HotelAgent:
@@ -42,11 +44,21 @@ class HotelAgent:
 
     def _understand(self, state: AgentState) -> dict[str, Any]:
         text = state.get("user_message", "").lower()
+        context = " ".join(
+            [item.get("content", "") for item in state.get("history", []) if item.get("role") == "user"]
+            + [state.get("user_message", "")]
+        )
+        context_lower = context.lower()
         complaint_words = ("complaint", "broken", "dirty", "terrible", "refund", "unhappy", "problem", "issue")
         booking_words = ("book", "availability", "available", "room", "stay", "check in", "check-in", "rate")
         if any(word in text for word in complaint_words):
             intent = "complaint"
-        elif any(word in text for word in booking_words) and len(DATE_RE.findall(text)) >= 2:
+        elif any(word in text for word in ("book", "reserve", "reservation", "confirm")) or (
+            any(word in context_lower for word in ("book", "reserve", "reservation"))
+            and (EMAIL_RE.search(context) or re.search(r"\bmy name is\b", context_lower))
+        ):
+            intent = "booking"
+        elif any(word in text for word in booking_words) and len(DATE_RE.findall(context_lower)) >= 2:
             intent = "availability"
         elif any(word in text for word in booking_words):
             intent = "booking_guidance"
@@ -54,16 +66,35 @@ class HotelAgent:
             intent = "upsell"
         else:
             intent = "faq"
-        dates = DATE_RE.findall(text)
-        guests_match = re.search(r"(\d+)\s*(?:guest|adult|people)", text)
-        room_id = next((room["id"] for room in self.store.room_types if room["id"] in text), None)
+        dates = DATE_RE.findall(context_lower)
+        guests_match = re.findall(r"(\d+)\s*(?:guest|adult|people)", context_lower)
+        room_id = next((room["id"] for room in self.store.room_types if room["id"] in context_lower), None)
+        package_ids = [
+            package["id"] for package in self.store.packages
+            if package["id"] in context_lower or package["name"].lower() in context_lower
+        ]
+        emails = EMAIL_RE.findall(context)
+        phones = [
+            phone.strip() for phone in PHONE_RE.findall(context)
+            if not DATE_RE.fullmatch(phone.strip())
+        ]
+        name_match = re.findall(
+            r"(?:my name is|name is|i am|i'm)\s+([A-Za-z][A-Za-z '-]{1,60}?)(?:,|$)",
+            context,
+            re.I,
+        )
         return {
             "intent": intent,
             "entities": {
                 "check_in": dates[0] if len(dates) > 0 else None,
                 "check_out": dates[1] if len(dates) > 1 else None,
-                "guests": int(guests_match.group(1)) if guests_match else 2,
+                "guests": int(guests_match[-1]) if guests_match else 2,
                 "room_type": room_id,
+                "packages": package_ids,
+                "email": emails[-1] if emails else None,
+                "phone": phones[-1].strip() if phones else None,
+                "guest_name": name_match[-1].strip(" .,") if name_match else None,
+                "confirmed": bool(re.search(r"\b(confirm|confirmed|yes|proceed|go ahead)\b", text)),
             },
         }
 
@@ -71,6 +102,30 @@ class HotelAgent:
         intent = state["intent"]
         entities = state.get("entities", {})
         text = state.get("user_message", "")
+        if intent == "booking":
+            required = ("check_in", "check_out", "room_type", "guest_name", "email", "phone")
+            missing = [field for field in required if not entities.get(field)]
+            if missing:
+                prompts = {
+                    "check_in": "arrival date (YYYY-MM-DD)",
+                    "check_out": "departure date (YYYY-MM-DD)",
+                    "room_type": "room type",
+                    "guest_name": "full name",
+                    "email": "email address",
+                    "phone": "phone number",
+                }
+                return {"tool_results": {"booking": {"status": "needs_details", "missing": [prompts[item] for item in missing]}}}
+            if entities.get("confirmed"):
+                result = self.tools.create_booking(
+                    entities["guest_name"], entities["email"], entities["phone"],
+                    entities["room_type"], entities["check_in"], entities["check_out"],
+                    entities["guests"], entities.get("packages", []),
+                )
+                return {"tool_results": {"booking": result}}
+            quote = self.tools.quote(
+                entities["room_type"], entities["check_in"], entities["check_out"], entities.get("packages", [])
+            )
+            return {"tool_results": {"booking": {"status": "awaiting_confirmation", "quote": quote}}}
         if intent == "availability":
             result = self.tools.check_availability(
                 entities["check_in"], entities["check_out"], entities["guests"], entities["room_type"]
@@ -91,7 +146,7 @@ class HotelAgent:
 
     def _respond(self, state: AgentState) -> dict[str, Any]:
         response = self._deterministic_response(state)
-        if self.llm:
+        if self.llm and state.get("intent") not in {"booking", "complaint"}:
             try:
                 response = self._llm_response(state, response)
             except Exception:
@@ -119,6 +174,29 @@ class HotelAgent:
             return "\n".join(lines)
         if intent == "booking_guidance":
             return "I can check rooms and rates when you share arrival and departure dates in YYYY-MM-DD format. You can also use the booking panel to compare rooms and confirm a stay."
+        if intent == "booking":
+            booking = results.get("booking", {})
+            if booking.get("status") == "needs_details":
+                return "I can arrange that. Please share your " + ", ".join(booking["missing"]) + "."
+            if booking.get("status") == "awaiting_confirmation":
+                quote = booking["quote"]
+                if not quote.get("success"):
+                    return f"I couldn't prepare that reservation: {quote['error']}"
+                data = quote["data"]
+                packages = ", ".join(line["name"] for line in data["package_lines"]) or "No extras"
+                return (
+                    f"Your **{data['room_name']}** is available for {data['nights']} night(s). "
+                    f"Total: **{data['currency']} {data['total']:,.0f}** including: {packages}. "
+                    "Reply **confirm** to create the reservation, or tell me what you’d like to change."
+                )
+            if booking.get("success"):
+                data = booking["data"]
+                return (
+                    f"Your reservation is confirmed. Confirmation **{data['booking_id']}**: "
+                    f"{data['check_in']} to {data['check_out']} in the {self.store.room(data['room_type'])['name']}. "
+                    f"Total: **{data['currency']} {data['total_amount']:,.0f}**."
+                )
+            return f"I couldn't complete that reservation: {booking.get('error', 'Please check the details and try again.')}"
         if intent == "complaint":
             return "I’m sorry something went wrong. Please use **Help & feedback** to open a case; our team will receive it with a tracking number. For urgent assistance, call " + self.store.hotel["contact"]["phone"] + "."
         if intent == "upsell":

@@ -25,7 +25,6 @@
       "Free parking"
     ]
   },
-
   "room_types": [
     {
       "id": "standard_king",
@@ -36,7 +35,12 @@
       "currency": "AED",
       "bed_type": "1 King Bed",
       "size_sqm": 28,
-      "amenities": ["Free WiFi", "Smart TV", "Mini fridge", "Air conditioning"]
+      "amenities": [
+        "Free WiFi",
+        "Smart TV",
+        "Mini fridge",
+        "Air conditioning"
+      ]
     },
     {
       "id": "deluxe_twin",
@@ -47,7 +51,13 @@
       "currency": "AED",
       "bed_type": "2 Double Beds",
       "size_sqm": 36,
-      "amenities": ["Free WiFi", "Smart TV", "Mini fridge", "Sofa area", "Air conditioning"]
+      "amenities": [
+        "Free WiFi",
+        "Smart TV",
+        "Mini fridge",
+        "Sofa area",
+        "Air conditioning"
+      ]
     },
     {
       "id": "executive_suite",
@@ -58,7 +68,14 @@
       "currency": "AED",
       "bed_type": "1 King Bed + Sofa Bed",
       "size_sqm": 55,
-      "amenities": ["Free WiFi", "Smart TV", "Mini bar", "Living area", "Bathtub", "Coffee machine"]
+      "amenities": [
+        "Free WiFi",
+        "Smart TV",
+        "Mini bar",
+        "Living area",
+        "Bathtub",
+        "Coffee machine"
+      ]
     },
     {
       "id": "presidential_suite",
@@ -69,10 +86,16 @@
       "currency": "AED",
       "bed_type": "1 King Bed + 2 Twin Beds",
       "size_sqm": 110,
-      "amenities": ["Free WiFi", "Private butler", "Dining area", "Jacuzzi", "Panoramic view", "Mini bar"]
+      "amenities": [
+        "Free WiFi",
+        "Private butler",
+        "Dining area",
+        "Jacuzzi",
+        "Panoramic view",
+        "Mini bar"
+      ]
     }
   ],
-
   "availability": {
     "standard_king": {
       "2026-09-15": 6,
@@ -103,7 +126,6 @@
       "2026-09-19": 1
     }
   },
-
   "packages": [
     {
       "id": "breakfast_addon",
@@ -146,6 +168,23 @@
       "applies_to": "per_night"
     }
   ],
-
-  "bookings": []
+  "bookings": [
+    {
+      "booking_id": "AWG-7B1E0F93",
+      "guest_name": "Kazi",
+      "email": "vocedi4947@hebase.com",
+      "phone": "+971563825856",
+      "room_type": "executive_suite",
+      "check_in": "2026-09-15",
+      "check_out": "2026-09-18",
+      "guests": 3,
+      "packages": [
+        "spa_package"
+      ],
+      "total_amount": 2900.0,
+      "currency": "AED",
+      "status": "confirmed",
+      "created_at": "2026-09-10T10:55:07.375741+00:00"
+    }
+  ]
 }
