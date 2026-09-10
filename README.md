@@ -88,6 +88,24 @@ For a first pilot, deploy the app behind authentication on a managed host,
 use one hotel's real data through a sandbox PMS integration, provide a human
 handoff button, and agree on success metrics before expanding the scope.
 
+## Deploying it live
+
+The simplest demo deployment is Streamlit Community Cloud:
+
+1. Push this repository to GitHub.
+2. Go to https://share.streamlit.io and sign in with GitHub.
+3. Choose `Wafi5632/hotel-ai-concierge`.
+4. Set the main file to `app.py`.
+5. Deploy.
+
+This gives the app a hosted `streamlit.app` URL. For a branded custom URL such
+as `concierge.yourhotel.com`, use a paid host that supports custom domains
+(Render, Railway, Fly.io, Azure, or AWS) and point the domain's DNS record to
+that host. Streamlit Community Cloud is excellent for demos, but custom-domain
+support and production controls depend on the hosting plan. Add secrets such as
+`OPENAI_API_KEY` in the host's secrets manager rather than committing them to
+GitHub.
+
 ## Data and safety notes
 
 Do not rename or add keys to `hotel_data.json`: `HotelDataStore` validates the
