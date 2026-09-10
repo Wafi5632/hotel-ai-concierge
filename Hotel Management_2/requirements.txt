@@ -1,0 +1,5 @@
+streamlit>=1.37,<2
+langgraph>=0.2,<1
+langchain-core>=0.3,<2
+# Optional provider support (the app uses a deterministic concierge without it).
+# Install with: pip install langchain-openai

@@ -1,0 +1,23 @@
+{
+  "d53c1916061f4268a31acf3faeb70036": {
+    "messages": [
+      {
+        "role": "user",
+        "content": "What packages do you currently have ?"
+      },
+      {
+        "role": "assistant",
+        "content": "To make your stay more comfortable, I recommend:\n\u2022 **Daily Breakfast** \u2014 A convenient buffet breakfast for every morning of your stay.\n\u2022 **Late Checkout (until 3 PM)** \u2014 More time to enjoy the hotel before a late departure.\n\u2022 **Spa & Wellness Package** \u2014 A relaxing complement to a multi-night stay.\n\nYou can add these in the booking panel."
+      },
+      {
+        "role": "user",
+        "content": "I would like to add Daily Brakfast"
+      },
+      {
+        "role": "assistant",
+        "content": "**Cancellation**: Free cancellation up to 48 hours before check-in. Cancellations within 48 hours are charged one night's rate.\n\n**Check In**: Check-in is from 15:00; check-out is by 12:00.\n\n**Children**: Children under 12 stay free when using existing bedding."
+      }
+    ],
+    "preferences": {}
+  }
+}

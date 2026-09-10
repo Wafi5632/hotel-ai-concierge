@@ -1,0 +1,151 @@
+{
+  "hotel": {
+    "name": "Al Waha Grand Hotel",
+    "location": "Dubai, UAE",
+    "check_in_time": "15:00",
+    "check_out_time": "12:00",
+    "contact": {
+      "phone": "+971-4-555-0199",
+      "email": "reservations@alwahagrand.example.com"
+    },
+    "policies": {
+      "cancellation": "Free cancellation up to 48 hours before check-in. Cancellations within 48 hours are charged one night's rate.",
+      "children": "Children under 12 stay free when using existing bedding.",
+      "pets": "Small pets allowed in designated rooms only, with a one-time cleaning fee of AED 150.",
+      "smoking": "All rooms are non-smoking. Designated smoking areas are available in the garden lounge."
+    },
+    "amenities": [
+      "Free WiFi",
+      "Outdoor pool",
+      "24-hour gym",
+      "Spa and wellness center",
+      "Airport shuttle",
+      "On-site restaurant and bar",
+      "Business center",
+      "Free parking"
+    ]
+  },
+
+  "room_types": [
+    {
+      "id": "standard_king",
+      "name": "Standard King Room",
+      "description": "Comfortable room with a king bed, city view, and work desk.",
+      "max_occupancy": 2,
+      "base_rate_per_night": 350,
+      "currency": "AED",
+      "bed_type": "1 King Bed",
+      "size_sqm": 28,
+      "amenities": ["Free WiFi", "Smart TV", "Mini fridge", "Air conditioning"]
+    },
+    {
+      "id": "deluxe_twin",
+      "name": "Deluxe Twin Room",
+      "description": "Spacious room with two double beds, ideal for families or friends.",
+      "max_occupancy": 4,
+      "base_rate_per_night": 480,
+      "currency": "AED",
+      "bed_type": "2 Double Beds",
+      "size_sqm": 36,
+      "amenities": ["Free WiFi", "Smart TV", "Mini fridge", "Sofa area", "Air conditioning"]
+    },
+    {
+      "id": "executive_suite",
+      "name": "Executive Suite",
+      "description": "Separate living area, premium furnishings, and skyline views.",
+      "max_occupancy": 3,
+      "base_rate_per_night": 850,
+      "currency": "AED",
+      "bed_type": "1 King Bed + Sofa Bed",
+      "size_sqm": 55,
+      "amenities": ["Free WiFi", "Smart TV", "Mini bar", "Living area", "Bathtub", "Coffee machine"]
+    },
+    {
+      "id": "presidential_suite",
+      "name": "Presidential Suite",
+      "description": "Top-floor suite with panoramic views, private butler service, and dining area.",
+      "max_occupancy": 4,
+      "base_rate_per_night": 2200,
+      "currency": "AED",
+      "bed_type": "1 King Bed + 2 Twin Beds",
+      "size_sqm": 110,
+      "amenities": ["Free WiFi", "Private butler", "Dining area", "Jacuzzi", "Panoramic view", "Mini bar"]
+    }
+  ],
+
+  "availability": {
+    "standard_king": {
+      "2026-09-15": 6,
+      "2026-09-16": 4,
+      "2026-09-17": 0,
+      "2026-09-18": 8,
+      "2026-09-19": 8
+    },
+    "deluxe_twin": {
+      "2026-09-15": 3,
+      "2026-09-16": 3,
+      "2026-09-17": 2,
+      "2026-09-18": 5,
+      "2026-09-19": 5
+    },
+    "executive_suite": {
+      "2026-09-15": 2,
+      "2026-09-16": 1,
+      "2026-09-17": 1,
+      "2026-09-18": 2,
+      "2026-09-19": 2
+    },
+    "presidential_suite": {
+      "2026-09-15": 1,
+      "2026-09-16": 1,
+      "2026-09-17": 0,
+      "2026-09-18": 1,
+      "2026-09-19": 1
+    }
+  },
+
+  "packages": [
+    {
+      "id": "breakfast_addon",
+      "name": "Daily Breakfast",
+      "description": "Full buffet breakfast for the duration of the stay.",
+      "price_per_night": 60,
+      "currency": "AED",
+      "applies_to": "per_room"
+    },
+    {
+      "id": "late_checkout",
+      "name": "Late Checkout (until 3 PM)",
+      "description": "Extend checkout time to 3:00 PM, subject to availability.",
+      "price": 100,
+      "currency": "AED",
+      "applies_to": "one_time"
+    },
+    {
+      "id": "spa_package",
+      "name": "Spa & Wellness Package",
+      "description": "60-minute massage and access to the wellness center for two guests.",
+      "price": 350,
+      "currency": "AED",
+      "applies_to": "one_time"
+    },
+    {
+      "id": "airport_transfer",
+      "name": "Airport Transfer",
+      "description": "Round-trip private airport transfer.",
+      "price": 180,
+      "currency": "AED",
+      "applies_to": "one_time"
+    },
+    {
+      "id": "room_upgrade",
+      "name": "Room Upgrade",
+      "description": "Upgrade to the next room tier, subject to availability.",
+      "price": 150,
+      "currency": "AED",
+      "applies_to": "per_night"
+    }
+  ],
+
+  "bookings": []
+}
